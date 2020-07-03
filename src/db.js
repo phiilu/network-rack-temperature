@@ -1,12 +1,26 @@
-const knex = require('knex')({
-  client: process.env.DB_PROVIDER,
-  connection: {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PW,
-    database: process.env.DB_DATABASE,
-  },
-  pool: { min: 0, max: 7 },
+const Influx = require('influx');
+
+const influx = new Influx.InfluxDB({
+  host: process.env.INFLUX_HOST,
+  database: process.env.INFLUX_DATABASE,
+  schema: [
+    {
+      measurement: 'temperature',
+      fields: {
+        temperature: Influx.FieldType.FLOAT,
+      },
+      tags: ['location'],
+    },
+    {
+      measurement: 'humidity',
+      fields: {
+        humidity: Influx.FieldType.FLOAT,
+      },
+      tags: ['location'],
+    },
+  ],
 });
 
-module.exports = knex;
+module.exports = {
+  influx,
+};
