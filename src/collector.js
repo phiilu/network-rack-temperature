@@ -3,14 +3,25 @@ const sensor = require('node-dht-sensor').promises;
 const { influx } = require('./db');
 const logger = require('./logger');
 const { io } = require('./webserver');
+const { fan } = require('./fan');
 
 let intervalId;
 
 async function collector() {
+  fan.off();
   async function getMeasurement() {
     try {
-      const { temperature, humidity } = await sensor.read(22, 4);
+      const { temperature, humidity } = await sensor.read(22, 17);
       const time = new Date();
+
+      if (!fan.isRunning && temperature > 25) {
+        fan.on();
+      }
+
+      if (fan.isRunning && temperature >= 23.5 && temperature <= 24) {
+        fan.off();
+      }
+
       await influx.writePoints([
         {
           measurement: 'temperature',
