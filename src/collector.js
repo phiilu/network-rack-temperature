@@ -14,11 +14,9 @@ async function collector() {
       const { temperature, humidity } = await sensor.read(22, 17);
       const time = new Date();
 
-      if (!fan.isRunning() && temperature > 26.0) {
+      if (!fan.isRunning() && temperature > 24.5) {
         fan.on();
-      }
-
-      if (fan.isRunning() && temperature < 25.0) {
+      } else {
         fan.off();
       }
 
